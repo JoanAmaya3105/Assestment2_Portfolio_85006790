@@ -40,6 +40,9 @@ namespace Assessment2Task2
         public static int roomCount = 0;
         public static int allocationCount = 0;
 
+        static string mainFile = "lhms_studentid.txt";
+        static string backupFile = "lhms_studentid_backup.txt";
+
         static void Main(string[] args)
         {
             char ans = 'Y';   // Inicializado para evitar el error
@@ -51,6 +54,7 @@ namespace Assessment2Task2
                 Console.WriteLine("                  LANGHAM HOTEL MANAGEMENT SYSTEM");
                 Console.WriteLine("                                MENU");
                 Console.WriteLine("***********************************************************************************");
+                Console.WriteLine("0. Backup File");
                 Console.WriteLine("1. Add Rooms");
                 Console.WriteLine("2. Display Rooms");
                 Console.WriteLine("3. Allocate Rooms");
@@ -91,6 +95,17 @@ namespace Assessment2Task2
                         Console.WriteLine("\nBilling Feature is Under Construction and will be added soon…!!!");
                         break;
 
+                    case 7:
+                        SaveRoomAllocationsToFile();
+                        break;
+
+                    case 8:
+                        ShowRoomAllocationsFromFile();
+                        break;
+
+                    case 0:
+                        BackupFile();
+                        break;
 
                     case 9:
                         Console.WriteLine("\nThank you for using LANGHAM Hotel Management System.");
@@ -249,6 +264,60 @@ namespace Assessment2Task2
                     $"{listOfRoomAllocations[i].AllocatedCustomer.CustomerNo}\t\t" +
                     $"{listOfRoomAllocations[i].AllocatedCustomer.CustomerName}");
             }
+        }
+        static void SaveRoomAllocationsToFile()
+        {
+            using (StreamWriter sw = new StreamWriter(mainFile, true))
+            {
+                sw.WriteLine("----- " + DateTime.Now + " -----");
+                for (int i = 0; i < allocationCount; i++)
+                {
+                    sw.WriteLine(
+                        listOfRoomAllocations[i].AllocatedRoomNo + "," +
+                        listOfRoomAllocations[i].AllocatedCustomer.CustomerNo + "," +
+                        listOfRoomAllocations[i].AllocatedCustomer.CustomerName);
+                }
+            }
+            Console.WriteLine("Data saved to file.");
+        }
+
+        static void ShowRoomAllocationsFromFile()
+        {
+            if (!File.Exists(mainFile))
+            {
+                Console.WriteLine("File does not exist.");
+                return;
+            }
+
+            using (StreamReader sr = new StreamReader(mainFile))
+            {
+                Console.WriteLine("\nFILE CONTENT:");
+                Console.WriteLine(sr.ReadToEnd());
+            }
+        }
+
+        static void BackupFile()
+        {
+            if (!File.Exists(mainFile))
+            {
+                Console.WriteLine("No data to backup.");
+                return;
+            }
+
+            string content;
+            using (StreamReader sr = new StreamReader(mainFile))
+            {
+                content = sr.ReadToEnd();
+            }
+
+            using (StreamWriter sw = new StreamWriter(backupFile, true))
+            {
+                sw.WriteLine("BACKUP - " + DateTime.Now);
+                sw.WriteLine(content);
+            }
+
+            File.WriteAllText(mainFile, string.Empty);
+            Console.WriteLine("Backup completed and original file cleared.");
         }
     }
 }
