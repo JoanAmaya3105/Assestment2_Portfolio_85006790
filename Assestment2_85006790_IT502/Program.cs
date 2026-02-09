@@ -273,10 +273,29 @@ namespace Assessment2Task2
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter("lhms_studentid.txt", true))
+                if (allocationCount == 0)
                 {
-                    sw.WriteLine("Saved on: " + DateTime.Now);
+                    Console.WriteLine("No room allocations available to save.");
+                    return;
                 }
+
+                using (StreamWriter sw = new StreamWriter(mainFile, true))
+                {
+                    sw.WriteLine("--------------------------------------------------");
+                    sw.WriteLine("Saved on: " + DateTime.Now);
+                    sw.WriteLine("Room No\tCustomer No\tCustomer Name");
+
+                    for (int i = 0; i < allocationCount; i++)
+                    {
+                        sw.WriteLine(
+                            listOfRoomAllocations[i].AllocatedRoomNo + "\t" +
+                            listOfRoomAllocations[i].AllocatedCustomer.CustomerNo + "\t\t" +
+                            listOfRoomAllocations[i].AllocatedCustomer.CustomerName
+                        );
+                    }
+                }
+
+                Console.WriteLine("Room allocation data saved successfully.");
             }
             catch (UnauthorizedAccessException)
             {
@@ -284,7 +303,7 @@ namespace Assessment2Task2
             }
             finally
             {
-                Console.WriteLine("File write operation completed.");
+                Console.WriteLine("Save operation completed.");
             }
         }
 
@@ -292,18 +311,36 @@ namespace Assessment2Task2
         {
             try
             {
-                using (StreamReader sr = new StreamReader("lhms_studentid.txt"))
+                if (!File.Exists(mainFile))
                 {
-                    Console.WriteLine(sr.ReadToEnd());
+                    Console.WriteLine("ERROR: File does not exist.");
+                    return;
+                }
+
+                using (StreamReader sr = new StreamReader(mainFile))
+                {
+                    string content = sr.ReadToEnd();
+
+                    if (string.IsNullOrWhiteSpace(content))
+                    {
+                        Console.WriteLine("The file exists but is empty.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n----- FILE CONTENT START -----");
+                        Console.WriteLine(content);
+                        Console.WriteLine("----- FILE CONTENT END -----");
+                    }
                 }
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("ERROR: File not found. Please save data before reading.");
+                Console.WriteLine("ERROR: File not found.");
             }
             finally
             {
-                Console.WriteLine("File read operation completed.");
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey();
             }
         }
 
