@@ -1,9 +1,8 @@
 ﻿/*
 * Project Name: Langham Hotel Management System
-* Author Name:
-* Date:
-* Application Purpose:
-* Console based Hotel Management System for managing rooms and allocations.
+* Author Name: Joan Sebastian Amaya Rivera
+* Date: 09/02/2026
+* Application Purpose: Console based Hotel Management System for managing rooms and allocations.
 */
 
 using System;
