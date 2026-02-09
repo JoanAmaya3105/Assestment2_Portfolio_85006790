@@ -126,27 +126,29 @@ namespace Assessment2Task2
         // Option 1 - Add Rooms
         static void AddRooms()
         {
-            Console.Write("\nHow many rooms do you want to add? ");
-            int count = Convert.ToInt32(Console.ReadLine());
-
-            for (int i = 0; i < count; i++)
+            try
             {
-                if (roomCount >= listofRooms.Length)
+                Console.Write("How many rooms do you want to add? ");
+                int count = Convert.ToInt32(Console.ReadLine());
+
+                for (int i = 0; i < count; i++)
                 {
-                    Console.WriteLine("Room limit reached!");
-                    break;
+                    Room room = new Room();
+
+                    Console.Write("Enter Room Number: ");
+                    room.RoomNo = Convert.ToInt32(Console.ReadLine());
+
+                    room.IsAllocated = false;
+                    listofRooms[roomCount++] = room;
                 }
-
-                Room room = new Room();
-
-                Console.Write("Enter Room Number: ");
-                room.RoomNo = Convert.ToInt32(Console.ReadLine());
-                room.IsAllocated = false;
-
-                listofRooms[roomCount] = room;
-                roomCount++;
-
-                Console.WriteLine("Room added successfully!\n");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("ERROR: Invalid input format. Please enter numeric values only.");
+            }
+            finally
+            {
+                Console.WriteLine("Add Rooms operation completed.");
             }
         }
 
@@ -213,37 +215,39 @@ namespace Assessment2Task2
         // Option 4 - De-Allocate Room
         static void DeAllocateRoom()
         {
-            Console.Write("\nEnter Room Number to De-Allocate: ");
-            int roomNo = Convert.ToInt32(Console.ReadLine());
-
-            for (int i = 0; i < allocationCount; i++)
+            try
             {
-                if (listOfRoomAllocations[i].AllocatedRoomNo == roomNo)
+                Console.Write("Enter Room Number to De-Allocate: ");
+                int roomNo = Convert.ToInt32(Console.ReadLine());
+
+                bool found = false;
+
+                for (int i = 0; i < allocationCount; i++)
                 {
-                    // Mark room as available again
-                    for (int j = 0; j < roomCount; j++)
+                    if (listOfRoomAllocations[i].AllocatedRoomNo == roomNo)
                     {
-                        if (listofRooms[j].RoomNo == roomNo)
-                        {
-                            listofRooms[j].IsAllocated = false;
-                            break;
-                        }
+                        found = true;
+                        allocationCount--;
+                        Console.WriteLine("Room de-allocated successfully.");
+                        break;
                     }
+                }
 
-                    // Remove allocation (shift array)
-                    for (int k = i; k < allocationCount - 1; k++)
-                    {
-                        listOfRoomAllocations[k] = listOfRoomAllocations[k + 1];
-                    }
-
-                    allocationCount--;
-                    Console.WriteLine("Room de-allocated successfully!");
-                    return;
+                if (!found)
+                {
+                    throw new InvalidOperationException("Room number not found in allocation list.");
                 }
             }
-
-            Console.WriteLine("Room allocation not found.");
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+            finally
+            {
+                Console.WriteLine("De-Allocate operation completed.");
+            }
         }
+
 
         // Option 5 - Display Room Allocation Details
         static void DisplayRoomAllocations()
@@ -267,34 +271,42 @@ namespace Assessment2Task2
         }
         static void SaveRoomAllocationsToFile()
         {
-            using (StreamWriter sw = new StreamWriter(mainFile, true))
+            try
             {
-                sw.WriteLine("----- " + DateTime.Now + " -----");
-                for (int i = 0; i < allocationCount; i++)
+                using (StreamWriter sw = new StreamWriter("lhms_studentid.txt", true))
                 {
-                    sw.WriteLine(
-                        listOfRoomAllocations[i].AllocatedRoomNo + "," +
-                        listOfRoomAllocations[i].AllocatedCustomer.CustomerNo + "," +
-                        listOfRoomAllocations[i].AllocatedCustomer.CustomerName);
+                    sw.WriteLine("Saved on: " + DateTime.Now);
                 }
             }
-            Console.WriteLine("Data saved to file.");
+            catch (UnauthorizedAccessException)
+            {
+                Console.WriteLine("ERROR: You do not have permission to write to this file.");
+            }
+            finally
+            {
+                Console.WriteLine("File write operation completed.");
+            }
         }
 
         static void ShowRoomAllocationsFromFile()
         {
-            if (!File.Exists(mainFile))
+            try
             {
-                Console.WriteLine("File does not exist.");
-                return;
+                using (StreamReader sr = new StreamReader("lhms_studentid.txt"))
+                {
+                    Console.WriteLine(sr.ReadToEnd());
+                }
             }
-
-            using (StreamReader sr = new StreamReader(mainFile))
+            catch (FileNotFoundException)
             {
-                Console.WriteLine("\nFILE CONTENT:");
-                Console.WriteLine(sr.ReadToEnd());
+                Console.WriteLine("ERROR: File not found. Please save data before reading.");
+            }
+            finally
+            {
+                Console.WriteLine("File read operation completed.");
             }
         }
+
 
         static void BackupFile()
         {
