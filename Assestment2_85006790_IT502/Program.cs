@@ -44,7 +44,7 @@ namespace Assessment2Task2
 
         static void Main(string[] args)
         {
-            char ans = 'Y';   // Inicializado para evitar el error
+            char ans = 'Y';   // Initializing to avoid the error
 
             do
             {
